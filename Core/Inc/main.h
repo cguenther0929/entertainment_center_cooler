@@ -89,7 +89,7 @@ void Error_Handler(void);
 /**
  * SW VERSION
  */
-#define SW_VERSION          "1.0.0"
+#define SW_VERSION          "0.0.1"
 
 
 
