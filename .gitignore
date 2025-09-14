@@ -1,0 +1,15 @@
+# Eclipse CDT project files
+.cproject
+.project
+.settings/
+
+*.vscode
+
+# Vagrant directory
+.vagrant/
+
+# Include makefiles
+!Makefile
+*~
+
+power_logger Debug.launch
