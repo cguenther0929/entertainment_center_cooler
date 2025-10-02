@@ -12,6 +12,7 @@
   */
 
 #include "console.h"            //Include file to support console
+#include "uart.h"
 
 struct UARTMembers uart;
 struct TEMPMembers temp;
@@ -71,7 +72,8 @@ float get_float( void ) {
 
 }
 
-void main_menu( void ) {
+void console_menu( void ) 
+{
     /*
      * This routine will be using the same buffer as what's 
      * used for the main application.  reset_rx_buffer() is called
@@ -90,7 +92,8 @@ void main_menu( void ) {
     cursor_top_left();
     blocking_ms_delay(10);
 
-    while(usr_number_u8 != 99) {
+    while(usr_number_u8 != 99) 
+    {
         print_string("1 --- View HW version.",LF);
         print_string("2 --- View SW version.",LF);
         print_string("3 --- Report temperature values.",LF);
@@ -106,7 +109,8 @@ void main_menu( void ) {
         usr_number_u8 = get_uint8();
 
        
-        switch(usr_number_u8) {
+        switch(usr_number_u8) 
+        {
             
             /**
              * View HW version
@@ -172,7 +176,9 @@ void main_menu( void ) {
                 clear_screen();
                 cursor_top_left();
                 insert_line_separator();
-                print_string("Not implemented yet",LF);
+                
+                print_string("Temperature trip point: ",0);
+                print_unsigned_decimal(TEMP_TRIP_POINT_F,LF);
             break;
             
             /**
@@ -187,10 +193,10 @@ void main_menu( void ) {
                 HAL_GPIO_WritePin(FAN_EN_GPIO_Port, FAN_EN_Pin, GPIO_PIN_SET);
             break;
                 
-                /**
-                 * Disable the fan
-                 */
-                case 6:
+            /**
+             * Disable the fan
+             */
+            case 6:
                 clear_screen();
                 cursor_top_left();
                 insert_line_separator();

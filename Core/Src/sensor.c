@@ -40,7 +40,7 @@ bool get_temperature_reading( void )
      * Drop the CS line low
      */
     HAL_GPIO_WritePin(TEMP_CS_GPIO_Port, TEMP_CS_Pin, GPIO_PIN_RESET);
-    blocking_ms_delay(2);
+    blocking_ms_delay(2); //TODO we want this in
     
     if(HAL_SPI_TransmitReceive(&hspi1, tx, rx, sizeof(rx), 10) != HAL_OK)  // 10 ms timeout
     {

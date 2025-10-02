@@ -30,6 +30,7 @@
 // struct timing       time;
 struct UARTMembers  uart; 
 struct timing       time;
+struct TEMPMembers  temp;
 
 /* USER CODE END PTD */
 
@@ -104,7 +105,15 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start(&htim1);
+
+  HAL_TIM_Base_Start_IT(&htim1);     // Main tick counter
+  HAL_TIM_Base_Start(&htim2);     // Used for us counter
+
+
+  HAL_GPIO_WritePin(HLTH_LED_GPIO_Port, HLTH_LED_Pin, GPIO_PIN_RESET);
+
+  // Must use Base Start IT if using interrupts
+  HAL_UART_Receive_IT(&huart1, &uart.rxchar, 1);  // UART to console interface
 
   /* USER CODE END 2 */
 
@@ -113,17 +122,38 @@ int main(void)
   while (1)
   {
 
-	  if(time.flag_10ms_tick) {
+	  if(time.flag_10ms_tick) 
+    {
 		  time.flag_10ms_tick = false;
+      
+      /** Enable fan it temp is to high */
+      if(temp.flt_temp_value > TEMP_TRIP_POINT_F) 
+      {
+        HAL_GPIO_WritePin(FAN_EN_GPIO_Port, FAN_EN_Pin, GPIO_PIN_SET);
+      }
+
+      /** Disable the fan when the temp is cool enough */
+      else if(temp.flt_temp_value < (TEMP_TRIP_POINT_F - TEMP_HYSTERESIS_F))
+      {
+        HAL_GPIO_WritePin(FAN_EN_GPIO_Port, FAN_EN_Pin, GPIO_PIN_RESET);
+      }
+
 	  }
 
-	  if(time.flag_100ms_tick) {
-	      time.flag_100ms_tick = false;
+	  if(time.flag_100ms_tick) 
+    {
+      time.flag_100ms_tick = false;
+      HAL_GPIO_TogglePin(HLTH_LED_GPIO_Port, HLTH_LED_Pin);
+      get_temperature_reading();
+      if(uart.rxchar == 'z')
+      {
+        uart.rxchar = '\0';
+        console_menu();
+      }
 	  }
 
     if(time.flag_500ms_tick) {
       time.flag_500ms_tick = false;
-      HAL_GPIO_TogglePin(HLTH_LED_GPIO_Port, HLTH_LED_Pin);
 
     }
 
@@ -284,7 +314,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 71;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 0;
+  htim2.Init.Period = 65535;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -357,10 +387,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, HLTH_LED_Pin|FAN_EN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(HLTH_LED_GPIO_Port, HLTH_LED_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(TEMP_CS_GPIO_Port, TEMP_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(FAN_EN_GPIO_Port, FAN_EN_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(TEMP_CS_GPIO_Port, TEMP_CS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pins : ID_B0_Pin ID_B1_Pin ID_B2_Pin */
   GPIO_InitStruct.Pin = ID_B0_Pin|ID_B1_Pin|ID_B2_Pin;
@@ -388,32 +421,44 @@ static void MX_GPIO_Init(void)
 /************************************************
  *  @brief Handle timer interrupts 
  ***********************************************/
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-	if(htim == &htim1){
-			time.flag_10ms_tick = true;
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) 
+{
+  if(htim == &htim1)
+  {
+    time.flag_10ms_tick = true;
 
-		 if(time.ticks10ms == 9) {
-		   time.ticks10ms = 0;
-		   time.flag_100ms_tick = true;
+    if(time.ticks10ms == 9) 
+    {
+        time.ticks10ms = 0;
+        time.flag_100ms_tick = true;
 
-		   if(time.ticks100ms == 4) {
-			 time.ticks100ms = 0;
-			 time.flag_500ms_tick = true;
+        if(time.ticks100ms == 4) 
+        {
+          time.ticks100ms = 0;
+          time.flag_500ms_tick = true;
 
-			 if(time.ticks500ms == 119)										// One minute worth of half seconds
-			   time.ticks500ms = 0;
-			 else
-			   time.ticks500ms += 1;
-		   }
-		   else {
-			   time.ticks100ms += 1;
-		   }
-		 }
-		 else {
-		   time.ticks10ms += 1;
-		 }
+          if(time.ticks500ms == 119)										// One minute worth of half seconds
+          {
+            time.ticks500ms = 0;
+          }
+          else
+          {
+            time.ticks500ms += 1;
+          }
+        } 
 
-		}
+        else 
+        {
+          time.ticks100ms += 1;
+        }
+    }
+
+    else 
+    {
+      time.ticks10ms += 1;
+    }
+
+  }
 }
 
 /************************************************
@@ -428,7 +473,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
    */
   if(huart == &huart1)
   {
-
     uart.rxbuf[uart.producer_index] = uart.rxchar;          // Load this byte into rx buffer  
     uart.byte_counter++;                                                   //Increase data counter
     (uart.producer_index >= MAX_RX_BUF_INDEX) ? (uart.producer_index = 0):(uart.producer_index++);       

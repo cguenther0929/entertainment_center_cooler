@@ -22,16 +22,18 @@ void init_timer ( void ) {
 }
 
 void blocking_us_delay (uint16_t us) {
-	__HAL_TIM_SET_COUNTER(&htim2,0);    // set the counter value a 0
+    __HAL_TIM_SET_COUNTER(&htim2,0);    // set the counter value a 0
     while (__HAL_TIM_GET_COUNTER(&htim2) < us);  // Ticks are in us
 }
 
-void blocking_ms_delay (uint16_t ms) {
-    uint8_t i   = 0;
-	__HAL_TIM_SET_COUNTER(&htim2,0);    // set the counter value a 0
-    for(i=0;i<ms;i++)
-    {
-        while (__HAL_TIM_GET_COUNTER(&htim2) < 1000);  // Ticks are in us
+void blocking_ms_delay(uint32_t ms)
+{
+    uint32_t start = __HAL_TIM_GET_COUNTER(&htim2);   // µs counter
+    uint32_t wait  = ms * 1000UL;                     // total µs
+
+    // works across wrap-around because of unsigned subtraction
+    while ((uint32_t)(__HAL_TIM_GET_COUNTER(&htim2) - start) < wait) {
+        __NOP();
     }
 }
 

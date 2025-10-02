@@ -1,9 +1,17 @@
-/*
- * uart.h
- *
- *  Created on: May 24, 2021
- *      Author: C. Guenther
- */
+/**
+  ******************************************************************************
+  * @file           : uart.h
+  * @brief          : Header for uart.c file.
+  *                   This file contains function prototypes and defines 
+  *                     as they relate to the UART
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2023 Clinton Guenther
+  * All rights reserved.
+  *
+  ******************************************************************************
+  */
 
 #ifndef INC_UART_H_
 #define INC_UART_H_
@@ -184,45 +192,7 @@ void reset_terminal( void );
  */
 void ClearLine( void );
 
-/*
- * Function: void reset_rx_buffer( void )
- * --------------------
- * This routine will null out the receive buffer, 
- * but also producer and consumer pointers 
- * will be reset to 0.
- * 
- * returns: Nothing 
- */
-void reset_rx_buffer( void );
 
-//TODO need to comment
-void IncrementConsumer( void ); 
 
-//TODO need to comment 
-void HandleByte( void );
-
-//TODO clean up comment
-/*
- * Function: void ProcessMessage( void )
- * --------------------
- * This function will execute upon the HandleByte
- * stat machine determining a full and valid message 
- * has been received.  
- *
- * returns: Nothing 
- */
-void ProcessMessage( void ); 
-
-//TODO need to comment
-void xbee_send_ack( void );
-
-//TODO need to comment
-void xbee_tx(const char *y);
-
-//TODO need to comment
-uint8_t Pow10LU(uint8_t power);
-
-//TODO need to comment
-void dec_to_bcd(uint32_t in_val, char bcd_array[], uint8_t * pSizeBCD);
 
 #endif /* INC_UART_H_ */

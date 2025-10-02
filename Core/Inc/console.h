@@ -20,12 +20,8 @@
 #include "uart.h"
 #include "main.h"
 #include "sensor.h"
-// #include "dac.h"
-// #include "max14662.h"
-// #include "ad7888.h"
 
 extern UART_HandleTypeDef huart1;
-// extern DAC_HandleTypeDef hdac;
 
 // TODO Update all comment BLOCKS!!
 // TODO Reference console.c
@@ -35,7 +31,7 @@ extern UART_HandleTypeDef huart1;
 * @param: Void passed in
 * @retval None
 */
-void main_menu( void );
+void console_menu( void );
 
 
 /**

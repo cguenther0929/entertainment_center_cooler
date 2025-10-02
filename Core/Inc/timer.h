@@ -26,7 +26,6 @@ struct timing {
 
 };
 
-//TODO need to clean up the following
 
 void init_timer ( void );
 
@@ -35,24 +34,7 @@ void init_timer ( void );
  */
 void blocking_us_delay (uint16_t us);
 
-void blocking_ms_delay (uint16_t ms);
-/**
- * @brief 
- * TODO need to comment
- */
-// void start_us_counter ( void );
-
-/**
- * @brief 
- * TODO need to comment
- */
-// void stop_us_counter ( void ); 
-
-/**
- * @brief 
- * TODO need to comment
- */
-// uint16_t get_us_counter ( void );
+void blocking_ms_delay (uint32_t ms);
 
 
 #endif /* INC_TIMER_H_ */

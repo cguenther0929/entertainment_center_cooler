@@ -33,9 +33,9 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "timer.h"
-#include <stdbool.h>
 #include "uart.h"
 #include "console.h"
+#include <stdbool.h>
 
 /* USER CODE END Includes */
 
@@ -89,8 +89,13 @@ void Error_Handler(void);
 /**
  * SW VERSION
  */
-#define SW_VERSION          "0.0.1"
+#define SW_VERSION          "0.0.2"
 
+/**
+ * TEMP TRIP POINT
+ */
+#define TEMP_TRIP_POINT_F     80
+#define TEMP_HYSTERESIS_F     2
 
 
 /* USER CODE END Private defines */

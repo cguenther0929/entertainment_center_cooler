@@ -1,3 +1,3 @@
-console.c:20:9:get_uint8	16	static
-console.c:46:7:get_float	16	static
-console.c:74:6:main_menu	24	static
+console.c:21:9:get_uint8	16	static
+console.c:47:7:get_float	16	static
+console.c:75:6:console_menu	24	static
