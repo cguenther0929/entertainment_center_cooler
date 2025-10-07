@@ -62,7 +62,7 @@ main-build: entertainment_center_cooler.elf secondary-outputs
 
 # Tool invocations
 entertainment_center_cooler.elf: $(OBJS) $(USER_OBJS) C:\Users\clintonguenther\Documents\STM32\ Cube\ IDE\ Workspace\entertainment_center_cooler\STM32F105RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "entertainment_center_cooler.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\clintonguenther\Documents\STM32 Cube IDE Workspace\entertainment_center_cooler\STM32F105RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="entertainment_center_cooler.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "entertainment_center_cooler.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\clintonguenther\Documents\STM32 Cube IDE Workspace\entertainment_center_cooler\STM32F105RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="entertainment_center_cooler.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

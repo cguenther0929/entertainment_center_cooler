@@ -20,12 +20,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 #include "main.h"
 
 #include "stm32f1xx_hal.h"
 extern UART_HandleTypeDef   huart1;
-// extern UART_HandleTypeDef   huart2;
-// extern DAC_HandleTypeDef    hdac;
+// extern UART_HandleTypeDef   huart2;  //TODO remove?
+// extern DAC_HandleTypeDef    hdac;    //TODO remove?
 
 // ToDO Cleanup comment blocks and header def
 // TODO see console.c or .h
@@ -65,7 +66,7 @@ extern UART_HandleTypeDef   huart1;
  */
 struct UARTMembers {
     char        rxbuf[MAX_ELEMENTS];            // Ring buffer for serial receiver
-    char        rxchar;                         // Supported mainly for calibration routine 
+    uint8_t     rxchar;                         // Supported mainly for calibration routine 
     uint8_t     producer_index;                 // Use this to point to where the next received data byte shall go
     uint8_t     consumer_index;                 // Use this as the consumer of data in the buffer
     uint8_t     data_index;                     // Location where message data starts
@@ -89,6 +90,15 @@ struct UARTMembers {
 * @retval None
 */
 void print_float (float number, uint8_t action);
+
+/**
+* TODO temp or comment?
+* @brief Print float number 
+* @param number: float number to print
+* @param action: LF for line feed or 0 for no line feed
+* @retval None
+*/
+void uart_print_float(float value, int decimals);
 
 /**
  * FUNCTION: void print_string(const char * s, uint8_t action)
@@ -191,6 +201,16 @@ void reset_terminal( void );
  * returns: Nothing
  */
 void ClearLine( void );
+
+
+/**
+* TODO Fix comments
+* @brief Print float number 
+* @param number: float number to print
+* @param action: LF for line feed or 0 for no line feed
+* @retval None
+*/
+void reset_rx_buffer( void );
 
 
 

@@ -32,10 +32,11 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdbool.h>
+#include <inttypes.h>
 #include "timer.h"
 #include "uart.h"
 #include "console.h"
-#include <stdbool.h>
 
 /* USER CODE END Includes */
 
@@ -89,7 +90,7 @@ void Error_Handler(void);
 /**
  * SW VERSION
  */
-#define SW_VERSION          "0.0.2"
+#define SW_VERSION          "0.0.3"
 
 /**
  * TEMP TRIP POINT

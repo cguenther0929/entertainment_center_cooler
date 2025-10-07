@@ -1,2 +1,2 @@
-sensor.c:12:10:twos_convert	16	static
-sensor.c:21:6:get_temperature_reading	48	static
+sensor.c:13:10:twos_convert	16	static
+sensor.c:22:6:get_temperature_reading	48	static

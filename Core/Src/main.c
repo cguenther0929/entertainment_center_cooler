@@ -64,6 +64,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -95,7 +96,15 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+  uart.errorflag      = false;
+  uart.validmsg       = false;
+  uart.inmenu         = false;                    // Will not start out in console menu
+  uart.msg_state      = STATESTART;
+  uart.len_verify     = 0;                        // Initialize length verify counter to 0
+  uart.producer_index = 0;                        // Initialize consumer index
+  uart.consumer_index = 0;                        // Initialize producer index
 
+  
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -105,16 +114,21 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-
+  
   HAL_TIM_Base_Start_IT(&htim1);     // Main tick counter
+  
+  __HAL_TIM_SET_AUTORELOAD(&htim2, 0xFFFFFFFF);  //Issue with the GUI -- this is a 32 bit timer!
   HAL_TIM_Base_Start(&htim2);     // Used for us counter
-
-
+  
+  
   HAL_GPIO_WritePin(HLTH_LED_GPIO_Port, HLTH_LED_Pin, GPIO_PIN_RESET);
-
+  
   // Must use Base Start IT if using interrupts
   HAL_UART_Receive_IT(&huart1, &uart.rxchar, 1);  // UART to console interface
+  
+  print_string("RESET",LF);
 
+  HAL_GPIO_WritePin(FAN_EN_GPIO_Port, FAN_EN_Pin, GPIO_PIN_RESET);  //Disable the fan
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -129,7 +143,7 @@ int main(void)
       /** Enable fan it temp is to high */
       if(temp.flt_temp_value > TEMP_TRIP_POINT_F) 
       {
-        HAL_GPIO_WritePin(FAN_EN_GPIO_Port, FAN_EN_Pin, GPIO_PIN_SET);
+//        HALs_GPIO_WritePin(FAN_EN_GPIO_Port, FAN_EN_Pin, GPIO_PIN_SET); //TODO we want this in
       }
 
       /** Disable the fan when the temp is cool enough */
@@ -230,9 +244,9 @@ static void MX_SPI1_Init(void)
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
+  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -314,7 +328,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 71;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 65535;
+  htim2.Init.Period = 0xffff;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -354,7 +368,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 57600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -471,7 +485,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
    * Console UART Interface
    * 
    */
-  if(huart == &huart1)
+  if(huart->Instance == USART1)
   {
     uart.rxbuf[uart.producer_index] = uart.rxchar;          // Load this byte into rx buffer  
     uart.byte_counter++;                                                   //Increase data counter

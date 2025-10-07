@@ -28,8 +28,8 @@ void blocking_us_delay (uint16_t us) {
 
 void blocking_ms_delay(uint32_t ms)
 {
-    uint32_t start = __HAL_TIM_GET_COUNTER(&htim2);   // µs counter
-    uint32_t wait  = ms * 1000UL;                     // total µs
+    uint32_t start = __HAL_TIM_GET_COUNTER(&htim2);     // µs counter
+    uint32_t wait  = ms * 1000U;                         // total µs
 
     // works across wrap-around because of unsigned subtraction
     while ((uint32_t)(__HAL_TIM_GET_COUNTER(&htim2) - start) < wait) {

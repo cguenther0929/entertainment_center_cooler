@@ -19,7 +19,7 @@ struct TEMPMembers temp;
 
 
 uint8_t get_uint8 ( void ) {
-    uint8_t number      = 0;
+    int number      = 0;
     uint8_t timeout     = 0;
 
     reset_rx_buffer();
@@ -153,20 +153,27 @@ void console_menu( void )
                 cursor_top_left();
                 insert_line_separator();
                 
+                
                 uart.rxchar = '\0';
                 while (uart.rxchar != 'x')
                 {
+                    uint8_t i=0;
+
                     if (get_temperature_reading () == false) {
-                        print_string("Error retreving temp value", LF);
+                        print_string("Error retrieving temp value", LF);
                     }
 
                     print_string("Temp value: ", 0);
                     print_float(temp.flt_temp_value, LF);
                     
-                    blocking_ms_delay(1000);
+                    for(i=0;i<10;i++)
+                    {
+                        blocking_ms_delay(50);          //Max is 65535us
+                    }
 
                 }
-                print_string("Not implemented yet",LF);
+                clear_screen();
+                cursor_top_left();
             break;
             
             /**
