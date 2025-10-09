@@ -104,6 +104,10 @@ int main(void)
   uart.producer_index = 0;                        // Initialize consumer index
   uart.consumer_index = 0;                        // Initialize producer index
 
+  temp.fan_transition = false;
+  temp.fan_on         = false;
+  temp.fan_transition_blink_count = 0;
+
   
   /* USER CODE END SysInit */
 
@@ -140,16 +144,22 @@ int main(void)
     {
 		  time.flag_10ms_tick = false;
       
-      /** Enable fan it temp is to high */
-      if(temp.flt_temp_value > TEMP_TRIP_POINT_F) 
+      /** Enable fan if temp is to high */
+      if(temp.flt_temp_value > TEMP_TRIP_F_RISING &&
+          temp.fan_on == false) 
       {
-//        HALs_GPIO_WritePin(FAN_EN_GPIO_Port, FAN_EN_Pin, GPIO_PIN_SET); //TODO we want this in
+       HAL_GPIO_WritePin(FAN_EN_GPIO_Port, FAN_EN_Pin, GPIO_PIN_SET); 
+       temp.fan_transition = true;
+       temp.fan_on = true;
       }
-
+      
       /** Disable the fan when the temp is cool enough */
-      else if(temp.flt_temp_value < (TEMP_TRIP_POINT_F - TEMP_HYSTERESIS_F))
+      else if(temp.flt_temp_value < TEMP_TRIP_F_FALLING &&
+                temp.fan_on == true)
       {
         HAL_GPIO_WritePin(FAN_EN_GPIO_Port, FAN_EN_Pin, GPIO_PIN_RESET);
+        temp.fan_transition = true;
+        temp.fan_on = false;
       }
 
 	  }
@@ -157,7 +167,19 @@ int main(void)
 	  if(time.flag_100ms_tick) 
     {
       time.flag_100ms_tick = false;
-      HAL_GPIO_TogglePin(HLTH_LED_GPIO_Port, HLTH_LED_Pin);
+      
+      if(temp.fan_transition == true &&
+          temp.fan_transition_blink_count < MAX_TRANSITION_BLINKS)
+      {
+        temp.fan_transition_blink_count++;
+        HAL_GPIO_TogglePin(HLTH_LED_GPIO_Port, HLTH_LED_Pin);
+        if(temp.fan_transition_blink_count >= MAX_TRANSITION_BLINKS &&
+            temp.fan_transition == true)
+        {
+          temp.fan_transition = false;
+          temp.fan_transition_blink_count = 0;
+        }
+      }
       get_temperature_reading();
       if(uart.rxchar == 'z')
       {
@@ -165,10 +187,14 @@ int main(void)
         console_menu();
       }
 	  }
-
+    
     if(time.flag_500ms_tick) {
       time.flag_500ms_tick = false;
-
+      if(temp.fan_transition == false)
+      {
+        HAL_GPIO_TogglePin(HLTH_LED_GPIO_Port, HLTH_LED_Pin);
+      }
+      
     }
 
     /* USER CODE END WHILE */

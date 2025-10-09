@@ -184,8 +184,11 @@ void console_menu( void )
                 cursor_top_left();
                 insert_line_separator();
                 
-                print_string("Temperature trip point: ",0);
-                print_unsigned_decimal(TEMP_TRIP_POINT_F,LF);
+                print_string("Temperature rising trip point: ",0);
+                print_unsigned_decimal(TEMP_TRIP_F_RISING,LF);
+                insert_line_separator();
+                print_string("Temperature falling trip point: ",0);
+                print_unsigned_decimal(TEMP_TRIP_F_FALLING,LF);
             break;
             
             /**

@@ -19,7 +19,11 @@ extern SPI_HandleTypeDef   hspi1;
 struct TEMPMembers {
     float       flt_temp_value;             // Current temperature value
     float       temperature_buffer[8];      // Buffer for temperature values 
-    uint8_t     temp_buf_index;          // Current index of the temperature buffer
+    uint8_t     temp_buf_index;             // Current index of the temperature buffer
+    
+    bool        fan_transition;             // Flag to capture fan transitions (like off to on)
+    bool        fan_on;                     // Flag to indicate when the fan is on
+    uint16_t    fan_transition_blink_count; // Flag to capture fan transitions (like off to on)
 };
 
 

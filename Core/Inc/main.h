@@ -90,13 +90,15 @@ void Error_Handler(void);
 /**
  * SW VERSION
  */
-#define SW_VERSION          "0.0.3"
+#define SW_VERSION          "0.1.0"
 
 /**
  * TEMP TRIP POINT
  */
-#define TEMP_TRIP_POINT_F     80
-#define TEMP_HYSTERESIS_F     2
+#define TEMP_TRIP_F_RISING    90
+#define TEMP_HYSTERESIS_F     3
+#define TEMP_TRIP_F_FALLING   (TEMP_TRIP_F_RISING - TEMP_HYSTERESIS_F)
+#define MAX_TRANSITION_BLINKS 25
 
 
 /* USER CODE END Private defines */
