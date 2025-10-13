@@ -125,7 +125,7 @@ int main(void)
   HAL_TIM_Base_Start(&htim2);     // Used for us counter
   
   
-  HAL_GPIO_WritePin(HLTH_LED_GPIO_Port, HLTH_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(HLTH_LED_GPIO_Port, HLTH_LED_Pin, GPIO_PIN_SET);
   
   // Must use Base Start IT if using interrupts
   HAL_UART_Receive_IT(&huart1, &uart.rxchar, 1);  // UART to console interface
@@ -178,6 +178,7 @@ int main(void)
         {
           temp.fan_transition = false;
           temp.fan_transition_blink_count = 0;
+          HAL_GPIO_WritePin(HLTH_LED_GPIO_Port, HLTH_LED_Pin, GPIO_PIN_SET);
         }
       }
       get_temperature_reading();
@@ -190,10 +191,6 @@ int main(void)
     
     if(time.flag_500ms_tick) {
       time.flag_500ms_tick = false;
-      if(temp.fan_transition == false)
-      {
-        HAL_GPIO_TogglePin(HLTH_LED_GPIO_Port, HLTH_LED_Pin);
-      }
       
     }
 
