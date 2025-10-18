@@ -2151,7 +2151,7 @@ void console_menu( void )
  800178e:	f000 ff9b 	bl	80026c8 <print_string>
                 print_unsigned_decimal(TEMP_TRIP_F_RISING,LF);
  8001792:	2101      	movs	r1, #1
- 8001794:	205a      	movs	r0, #90	; 0x5a
+ 8001794:	2055      	movs	r0, #85	; 0x55
  8001796:	f000 ff45 	bl	8002624 <print_unsigned_decimal>
                 insert_line_separator();
  800179a:	f001 f84b 	bl	8002834 <insert_line_separator>
@@ -2161,7 +2161,7 @@ void console_menu( void )
  80017a2:	f000 ff91 	bl	80026c8 <print_string>
                 print_unsigned_decimal(TEMP_TRIP_F_FALLING,LF);
  80017a6:	2101      	movs	r1, #1
- 80017a8:	2057      	movs	r0, #87	; 0x57
+ 80017a8:	2054      	movs	r0, #84	; 0x54
  80017aa:	f000 ff3b 	bl	8002624 <print_unsigned_decimal>
             break;
  80017ae:	e02e      	b.n	800180e <console_menu+0x236>
@@ -2584,8 +2584,8 @@ int main(void)
  8001a5c:	20000264 	.word	0x20000264
  8001a60:	0800aaac 	.word	0x0800aaac
  8001a64:	200002f4 	.word	0x200002f4
- 8001a68:	42b40000 	.word	0x42b40000
- 8001a6c:	42ae0000 	.word	0x42ae0000
+ 8001a68:	42aa0000 	.word	0x42aa0000
+ 8001a6c:	42a80000 	.word	0x42a80000
 
 08001a70 <SystemClock_Config>:
 /**
